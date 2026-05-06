@@ -16,4 +16,17 @@ class Payment extends Model
         'payment_date',
         'payment_method',
     ];
+
+    public function student()
+{
+    return $this->belongsTo(Student::class);
 }
+
+public function fee()
+{
+    return $this->belongsTo(Fee::class);
+}
+
+}
+
+
