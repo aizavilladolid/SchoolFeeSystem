@@ -1,11 +1,11 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\YourController; 
+use App\Http\Controllers\ReportController; 
 
 Route::get('/', function () {
     return view('welcome');
 });
 
-// This creates 7 routes for your School Fee System (index, create, store, etc.)
-Route::resource('payments', YourController::class);
+
+Route::get('/reports', 'App\Http\Controllers\ReportController@index')->name('reports.index');
