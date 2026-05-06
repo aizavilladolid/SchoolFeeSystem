@@ -12,14 +12,15 @@ return new class extends Migration
    public function up(): void
 {
     Schema::create('fees', function (Blueprint $table) {
-        $table->id();
-        $table->string('fee_type');       
-        $table->decimal('amount', 10, 2); 
-        $table->string('grade_level');    
-        $table->string('semester')->nullable(); 
-        $table->boolean('is_mandatory')->default(true); 
-        $table->timestamps();
-    });
+    $table->id();
+    $table->string('fee_name'); // Tuition, Lab, Misc
+    $table->decimal('amount', 10, 2);
+    $table->string('grade_level'); // Grade 7, Grade 10, etc.
+    $table->string('academic_year'); // 2025-2026
+    $table->string('semester'); // 1st / 2nd
+    $table->enum('type', ['required', 'optional']);
+    $table->timestamps();
+});
 }
 
 

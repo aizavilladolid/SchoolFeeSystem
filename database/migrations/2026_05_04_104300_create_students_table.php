@@ -17,7 +17,7 @@ return new class extends Migration
         $table->string('grade_level');            // grade/year level
         $table->string('section')->nullable();    // optional section
         $table->string('guardian_name')->nullable(); // parent/guardian
-        $table->string('contact_info')->nullable();  // phone/email
+        $table->string('contact_number')->nullable();  // phone/email
         $table->timestamps();                     // created_at & updated_at
     });
 }
