@@ -7,7 +7,6 @@
 
     <div class="py-12">
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
-            <!-- Main Content Card -->
             <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg border-t-4 border-[#71797E]">
                 <div class="p-8">
                     <h3 class="text-2xl font-bold text-[#5C4033] mb-4">
@@ -24,13 +23,47 @@
                         </p>
                     </div>
 
-                    <!-- Placeholder for future Fee Summary Table -->
                     <div class="mt-8">
-                        <p class="text-stone-400 italic text-sm">
-                            Fee collection reports and payment history will appear here.
-                        </p>
+                        <h4 class="text-lg font-bold text-[#5C4033] mb-4 border-b border-stone-200 pb-2">
+                            {{ __('Your Account Balance') }}
+                        </h4>
+                        
+                        <div class="overflow-x-auto">
+                            <table class="w-full text-left border-collapse">
+                                <thead>
+                                    <tr class="bg-stone-100 text-[#5C4033]">
+                                        <th class="px-4 py-3 font-semibold border-b border-stone-200">Description</th>
+                                        <th class="px-4 py-3 font-semibold border-b border-stone-200">Amount Due</th>
+                                        <th class="px-4 py-3 font-semibold border-b border-stone-200">Status</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @forelse(Auth::user()->studentFees ?? [] as $bill)
+                                        <tr class="border-b border-stone-100 hover:bg-stone-50 transition">
+                                            <td class="px-4 py-4 text-stone-700">
+                                                {{ $bill->feeDefinition->fee_type }}
+                                            </td>
+                                            <td class="px-4 py-4 font-mono text-stone-800">
+                                                ₱{{ number_format($bill->balance, 2) }}
+                                            </td>
+                                            <td class="px-4 py-4">
+                                                <span class="px-3 py-1 rounded-full text-xs font-bold {{ $bill->status == 'paid' ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700' }}">
+                                                    {{ strtoupper($bill->status) }}
+                                                </span>
+                                            </td>
+                                        </tr>
+                                    @empty
+                                        <tr>
+                                            <td colspan="3" class="px-4 py-8 text-center text-stone-400 italic">
+                                                {{ __('No fees have been assigned to your account yet.') }}
+                                            </td>
+                                        </tr>
+                                    @endforelse
+                                </tbody>
+                            </table>
+                        </div>
                     </div>
-                </div>
+                    </div>
             </div>
         </div>
     </div>
