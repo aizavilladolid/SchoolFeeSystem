@@ -10,8 +10,8 @@ class Fee extends Model
         'fee_name',
         'amount',
         'grade_level',
-        'academic_year',
+        'school_year',
         'semester',
-        'type'
+        'is_required',
     ];
 }

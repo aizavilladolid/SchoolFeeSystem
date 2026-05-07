@@ -1,6 +1,8 @@
 <?php
 
 namespace App\Http\Controllers;
+
+
 use App\Models\Fee;
 use Illuminate\Http\Request;
 
@@ -28,23 +30,59 @@ class FeeController extends Controller
         return view('fees.create');
     }
 
-    public function store(StoreFeeRequest $request)
-{
-    Fee::create($request->validated());
 
-    return redirect()->route('fees.index')
-        ->with('success', 'Fee created successfully!');
+    public function store(Request $request)
+{
+    $request->validate([
+        'fee_name' => 'required',
+        'amount' => 'required|numeric',
+        'grade_level' => 'required',
+        'school_year' => 'required',
+        'semester' => 'required',
+        'is_required' => 'required',
+    ]);
+
+    Fee::create([
+        'fee_name' => $request->fee_name,
+        'amount' => $request->amount,
+        'grade_level' => $request->grade_level,
+        'school_year' => $request->school_year,
+        'semester' => $request->semester,
+        'is_required' => $request->is_required,
+    ]);
+
+    return redirect()
+        ->route('fees.index')
+        ->with('success', 'Fee added successfully!');
 }
+
     public function edit(Fee $fee)
     {
         return view('fees.edit', compact('fee'));
     }
 
-    public function update(StoreFeeRequest $request, Fee $fee)
+    public function update(Request $request, Fee $fee)
 {
-    $fee->update($request->validated());
+    $request->validate([
+        'fee_name' => 'required',
+        'amount' => 'required|numeric',
+        'grade_level' => 'required',
+        'school_year' => 'required',
+        'semester' => 'required',
+        'is_required' => 'required',
+    ]);
 
-    return redirect()->route('fees.index')
+    $fee->update([
+        'fee_name' => $request->fee_name,
+        'amount' => $request->amount,
+        'grade_level' => $request->grade_level,
+        'school_year' => $request->school_year,
+        'semester' => $request->semester,
+        'is_required' => $request->is_required,
+    ]);
+
+    return redirect()
+        ->route('fees.index')
         ->with('success', 'Fee updated successfully!');
 }
 

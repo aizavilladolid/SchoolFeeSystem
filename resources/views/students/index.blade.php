@@ -1,46 +1,129 @@
-<h2>Student List</h2>
+{{-- resources/views/students/index.blade.php --}}
 
-@if(session('success'))
-    <p style="color:green">{{ session('success') }}</p>
-@endif
+@extends('layouts.app')
 
-<form method="GET">
-    <input type="text" name="search" placeholder="Search student">
-    <button type="submit">Search</button>
+@section('content')
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+
+    <h2 class="page-title">
+        Student Management
+    </h2>
+
+    <a href="{{ route('students.create') }}"
+       class="btn btn-primary">
+        Add Student
+    </a>
+
+</div>
+
+<form action="{{ route('students.index') }}"
+      method="GET"
+      class="mb-4">
+
+    <div class="row">
+
+        <div class="col-md-4">
+
+            <input type="text"
+                   name="search"
+                   class="form-control"
+                   placeholder="Search student">
+
+        </div>
+
+        <div class="col-md-2">
+
+            <button class="btn btn-dark w-100">
+                Search
+            </button>
+
+        </div>
+
+    </div>
+
 </form>
 
-<a href="{{ route('students.create') }}">Add Student</a>
+<div class="card custom-card">
 
-<table border="1">
-<tr>
-    <th>ID</th>
-    <th>Name</th>
-    <th>Grade</th>
-    <th>Section</th>
-    <th>Guardian</th>
-    <th>Contact</th>
-    <th>Action</th>
-</tr>
+    <div class="card-body">
 
-@foreach($students as $student)
-<tr>
-    <td>{{ $student->student_id }}</td>
-    <td>{{ $student->full_name }}</td>
-    <td>{{ $student->grade_level }}</td>
-    <td>{{ $student->section }}</td>
-    <td>{{ $student->guardian_name }}</td>
-    <td>{{ $student->contact_number }}</td>
-    <td>
-        <a href="{{ route('students.edit', $student->id) }}">Edit</a>
+        <table class="table table-hover align-middle">
 
-        <form method="POST" action="{{ route('students.destroy', $student->id) }}">
-            @csrf
-            @method('DELETE')
-            <button type="submit">Delete</button>
-        </form>
-    </td>
-</tr>
-@endforeach
-</table>
+            <thead>
 
-{{ $students->links() }}
+                <tr>
+                    <th>Student ID</th>
+                    <th>Full Name</th>
+                    <th>Grade Level</th>
+                    <th>Section</th>
+                    <th>Guardian</th>
+                    <th>Contact</th>
+                    <th width="180">Actions</th>
+                </tr>
+
+            </thead>
+
+            <tbody>
+
+                @forelse($students as $student)
+
+                    <tr>
+
+                        <td>{{ $student->student_id }}</td>
+                        <td>{{ $student->full_name }}</td>
+                        <td>{{ $student->grade_level }}</td>
+                        <td>{{ $student->section }}</td>
+                        <td>{{ $student->guardian_name }}</td>
+                        <td>{{ $student->contact_number }}</td>
+
+                        <td>
+
+                            <a href="{{ route('students.edit', $student->id) }}"
+                               class="btn btn-warning btn-sm">
+                                Edit
+                            </a>
+
+                            <form action="{{ route('students.destroy', $student->id) }}"
+                                  method="POST"
+                                  class="d-inline">
+
+                                @csrf
+                                @method('DELETE')
+
+                                <button class="btn btn-danger btn-sm"
+                                        onclick="return confirm('Delete this student?')">
+                                    Delete
+                                </button>
+
+                            </form>
+
+                        </td>
+
+                    </tr>
+
+                @empty
+
+                    <tr>
+
+                        <td colspan="7" class="text-center py-4">
+                            No students found.
+                        </td>
+
+                    </tr>
+
+                @endforelse
+
+            </tbody>
+
+        </table>
+
+        <div class="mt-3">
+            {{ $students->links() }}
+        </div>
+
+    </div>
+
+</div>
+
+@endsection
