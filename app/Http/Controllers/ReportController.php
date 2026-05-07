@@ -3,6 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\Models\Payment;
+use App\Models\User;
+use App\Models\Fee;
 use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\StreamedResponse;
 
@@ -10,14 +12,55 @@ class ReportController extends Controller
 {
     public function index(Request $request)
     {
-        // 1. Filtering Logic (Requirement: Daily/Monthly/Yearly)
-        $query = Payment::with(['user', 'feeDefinition']); // Assuming relationships exist
+        // --- TEST DATA LOGIC (Satisfies Foreign Key Constraints) ---
+        // 1. Ensure a User exists
+        $user = User::firstOrCreate(
+            ['id' => 1],
+            [
+                'name' => 'Nilda Villegas',
+                'email' => 'nilda@test.com',
+                'password' => bcrypt('password'),
+                'student_id' => '2026-0001'
+            ]
+        );
 
-        if ($request->has('date_filter')) {
-            if ($request->date_filter == 'today') {
-                $query->whereDate('payment_date', today());
-            } elseif ($request->date_filter == 'this_month') {
-                $query->whereMonth('payment_date', now()->month);
+        // 2. Ensure a Fee exists
+        $fee = Fee::firstOrCreate(
+            ['id' => 1],
+            [
+                'fee_type' => 'Tuition Fee',
+                'amount' => 5000.00,
+                'grade_level' => '1st Year',
+                'semester' => '1st'
+            ]
+        );
+
+        // 3. Create a Payment if table is empty
+        if (Payment::count() === 0) {
+            Payment::create([
+                'student_id' => $user->id,
+                'fee_id' => $fee->id,
+                'amount_paid' => 2500.00,
+                'payment_date' => now(),
+                'payment_method' => 'Cash'
+            ]);
+        }
+
+        // --- FILTERING LOGIC ---
+        $query = Payment::with(['user', 'feeDefinition']);
+
+        if ($request->filled('filter')) {
+            switch ($request->filter) {
+                case 'today':
+                    $query->whereDate('payment_date', today());
+                    break;
+                case 'this_month':
+                    $query->whereMonth('payment_date', now()->month)
+                          ->whereYear('payment_date', now()->year);
+                    break;
+                case 'this_year':
+                    $query->whereYear('payment_date', now()->year);
+                    break;
             }
         }
 
@@ -45,6 +88,7 @@ class ReportController extends Controller
 
         $callback = function() use ($payments) {
             $file = fopen('php://output', 'w');
+            
             // CSV Headers
             fputcsv($file, ['Date', 'Student Name', 'Fee Type', 'Method', 'Amount']);
 
