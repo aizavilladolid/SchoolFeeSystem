@@ -57,6 +57,11 @@
     <a href="{{ route('reports.export') }}" class="btn-export">
         📥 Export CSV
     </a>
+
+    <a href="{{ route('payments.create') }}" style="background-color: #B2AC88; color: white; padding: 12px 20px; text-decoration: none; border-radius: 5px; font-weight: bold; float: right; margin-right: 10px;">
+    ➕ Add Payment
+</a>
+
 </div>
 
 <form action="{{ route('reports.index') }}" method="GET" style="margin-bottom: 20px; background: white; padding: 15px; border-radius: 5px; border: 1px solid #ddd;">
@@ -77,6 +82,12 @@
     {{ request('filter') ? str_replace('_', ' ', strtoupper(request('filter'))) : 'ALL TIME' }} 
     | Total Collected: ₱{{ number_format($totalCollected, 2) }}
 </div>
+
+    @if(session('success'))
+    <div style="background: #D4EDDA; color: #155724; padding: 10px; margin-bottom: 20px; border-radius: 4px; border: 1px solid #C3E6CB;">
+        ✅ {{ session('success') }}
+    </div>
+@endif
 
 <table>
     <tr>
