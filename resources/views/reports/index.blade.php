@@ -1,67 +1,73 @@
 @extends('layouts.app')
 
 @section('content')
-<div style="width: 100%;"> 
-    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px;">
-        <h1 style="color: #000; margin: 0; font-size: 28px;">Fee Collection Report</h1>
-        <div style="display: flex; gap: 10px;">
-            <a href="{{ route('payments.create') }}" style="background-color: #004d26; color: white; padding: 12px 20px; text-decoration: none; border-radius: 4px; font-weight: bold;">
-                ➕ Add Payment
-            </a>
-            <a href="{{ route('reports.export') }}" style="background-color: #5C4033; color: white; padding: 12px 20px; text-decoration: none; border-radius: 4px; font-weight: bold;">
-                📥 Export CSV
-            </a>
-        </div>
+<!-- Title and Action Buttons -->
+<div style="display: flex; justify-content: space-between; align-items: flex-end; width: 100%; margin-bottom: 10px;">
+    <h1 style="margin: 0; font-size: 32px; color: #1a1a1a; font-weight: 700;">Fee Collection Report</h1>
+    <div style="display: flex; gap: 10px;">
+        <a href="{{ route('payments.create') }}" style="background: #004d26; color: white; padding: 12px 20px; border-radius: 6px; text-decoration: none; font-weight: bold; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
+            + Add Payment
+        </a>
+        <a href="{{ route('reports.export') }}" style="background: #5C4033; color: white; padding: 12px 20px; border-radius: 6px; text-decoration: none; font-weight: bold; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
+            💾 Export CSV
+        </a>
     </div>
+</div>
 
-    @if(session('success'))
-        <div style="background: #D4EDDA; color: #155724; padding: 15px; margin-bottom: 20px; border-radius: 8px; border: 1px solid #C3E6CB;">
-            ✅ {{ session('success') }}
-        </div>
-    @endif
+<!-- Horizontal Line for Clean Separation -->
+<hr style="border: 0; border-top: 1px solid #ddd; margin-bottom: 20px;">
 
-    <div style="display: flex; gap: 20px; margin-bottom: 30px;">
-        <div style="background: white; padding: 20px; border-radius: 8px; border-left: 5px solid #004d26; box-shadow: 0 2px 4px rgba(0,0,0,0.05); flex: 1;">
-            <span style="color: #666; font-size: 12px; font-weight: bold; text-transform: uppercase;">Total Collected</span>
-            <h2 style="margin: 5px 0 0 0; color: #004d26;">₱{{ number_format($totalCollected, 2) }}</h2>
-        </div>
+<!-- Filter Bar -->
+<div style="background: white; padding: 20px; border-radius: 8px; border: 1px solid #e0e0e0; display: flex; align-items: center; gap: 15px;">
+    <span style="font-weight: bold; color: #555;">Filter:</span>
+    <form action="{{ route('reports.index') }}" method="GET" style="display: flex; gap: 10px; flex-grow: 1;">
+        <select name="filter" style="padding: 10px; border-radius: 5px; border: 1px solid #ccc; width: 250px;">
+            <option value="">All Time</option>
+            <option value="today" {{ request('filter') == 'today' ? 'selected' : '' }}>Today</option>
+            <option value="this_month" {{ request('filter') == 'this_month' ? 'selected' : '' }}>This Month</option>
+        </select>
+        <button type="submit" style="background: #004d26; color: white; border: none; padding: 10px 20px; border-radius: 5px; cursor: pointer; font-weight: bold;">Apply</button>
+    </form>
+</div>
 
-        <div style="background: white; padding: 20px; border-radius: 8px; border: 1px solid #ddd; flex: 2; display: flex; align-items: center;">
-            <form action="{{ route('reports.index') }}" method="GET" style="display: flex; align-items: center; gap: 10px; width: 100%;">
-                <label style="font-weight: bold; font-size: 14px; white-space: nowrap;">Filter By:</label>
-                <select name="filter" style="padding: 8px; border-radius: 4px; border: 1px solid #ccc; flex-grow: 1;">
-                    <option value="">All Time</option>
-                    <option value="today">Today</option>
-                    <option value="this_month">This Month</option>
-                </select>
-                <button type="submit" style="background: #004d26; color: white; border: none; padding: 8px 20px; border-radius: 4px; cursor: pointer; font-weight: bold;">Apply</button>
-            </form>
-        </div>
+<!-- Breakdown Cards -->
+<div style="display: flex; gap: 20px; flex-wrap: wrap;">
+    @foreach($breakdown as $item)
+    <div style="background: white; padding: 20px; border-radius: 10px; border-top: 5px solid #004d26; box-shadow: 0 4px 6px rgba(0,0,0,0.05); min-width: 200px;">
+        <div style="color: #888; font-size: 12px; font-weight: 800; text-transform: uppercase;">{{ $item->feeDefinition->fee_type ?? 'Fees' }}</div>
+        <div style="font-size: 24px; font-weight: bold; color: #004d26; margin-top: 5px;">₱{{ number_format($item->total, 2) }}</div>
     </div>
+    @endforeach
+</div>
 
-    <div style="background: white; border-radius: 4px; overflow: hidden; box-shadow: 0 2px 10px rgba(0,0,0,0.1); border: 1px solid #ddd;">
-        <table style="width: 100%; border-collapse: collapse;">
-            <thead>
-                <tr style="background-color: #76d783; color: #004d26;"> 
-                    <th style="padding: 15px; text-align: left; border-bottom: 2px solid #5cb85c;">Date</th>
-                    <th style="padding: 15px; text-align: left; border-bottom: 2px solid #5cb85c;">Student ID</th>
-                    <th style="padding: 15px; text-align: left; border-bottom: 2px solid #5cb85c;">Name</th>
-                    <th style="padding: 15px; text-align: left; border-bottom: 2px solid #5cb85c;">Method</th>
-                    <th style="padding: 15px; text-align: right; border-bottom: 2px solid #5cb85c;">Amount</th>
-                </tr>
-            </thead>
-            <tbody>
-                @foreach($payments as $payment)
-                <tr>
-                    <td style="padding: 12px; border: 1px solid #eee;">{{ $payment->payment_date }}</td>
-                    <td style="padding: 12px; border: 1px solid #eee;">{{ $payment->student->student_id }}</td>
-                    <td style="padding: 12px; border: 1px solid #eee;">{{ $payment->student->full_name }}</td>
-                    <td style="padding: 12px; border: 1px solid #eee;">{{ $payment->payment_method }}</td>
-                    <td style="padding: 12px; border: 1px solid #eee; font-weight: bold; text-align: right;">₱{{ number_format($payment->amount_paid, 2) }}</td>
-                </tr>
-                @endforeach
-            </tbody>
-        </table>
-    </div>
+<!-- Table Container -->
+<div style="background: white; border-radius: 10px; overflow: hidden; border: 1px solid #ddd; box-shadow: 0 4px 10px rgba(0,0,0,0.05);">
+    <table style="width: 100%; border-collapse: collapse;">
+        <thead>
+            <tr style="background: #76d783; color: #004d26;">
+                <th style="padding: 15px; text-align: left;">Date</th>
+                <th style="padding: 15px; text-align: left;">Student ID</th>
+                <th style="padding: 15px; text-align: left;">Name</th>
+                <th style="padding: 15px; text-align: left;">Method</th>
+                <th style="padding: 15px; text-align: right;">Amount</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach($payments as $payment)
+            <tr style="border-bottom: 1px solid #eee;">
+                <td style="padding: 15px;">{{ $payment->payment_date }}</td>
+                <td style="padding: 15px;">{{ $payment->student->student_id }}</td>
+                <td style="padding: 15px;">{{ $payment->student->full_name }}</td>
+                <td style="padding: 15px;"><span style="background: #f0f0f0; padding: 4px 8px; border-radius: 4px; font-size: 12px;">{{ $payment->payment_method }}</span></td>
+                <td style="padding: 15px; text-align: right; font-weight: bold;">₱{{ number_format($payment->amount_paid, 2) }}</td>
+            </tr>
+            @endforeach
+        </tbody>
+    </table>
+</div>
+
+<!-- Pagination Links (Requirement #11) -->
+<div style="margin-top: 20px;">
+    {{ $payments->links() }}
 </div>
 @endsection

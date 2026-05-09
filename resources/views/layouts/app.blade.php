@@ -45,10 +45,11 @@ body {
     background-color: #e6b800;
 }
 
-/* Ensure the main content wrapper doesn't have its own margin */
-.main-content {
-    margin-left: 260px; /* This is the ONLY place we need the margin */
-    width: calc(100% - 260px); /* This ensures it only takes the remaining space */
+.main-wrapper {
+    margin-left: 260px; /* Exact width of your yellow sidebar */
+    width: calc(100% - 260px);
+    background-color: #f4f4f4; /* Background for the whole right side */
+    min-height: 100vh;
 }
 
 .top-header {
@@ -58,13 +59,16 @@ body {
     align-items: center;
     justify-content: center;
     color: white;
-    width: 100%; /* Now 100% of the main-content, not the whole screen */
+    width: 100%;
 }
 
-.container { 
-    padding: 30px; /* Remove margin-left here! The main-content parent handles it */
-    background-color: #f4f4f4;
+.content-area {
+    padding: 40px; /* This creates the 'invisible wall' everything hits */
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
 }
+
 
     </style>
 </head>
@@ -83,11 +87,7 @@ body {
         <h1 style="margin: 0; font-size: 24px;">School Information Service</h1>
     </div>
 
-    <div class="container" style="padding: 20px;">
-        <div style="background: var(--usjr-yellow); padding: 20px; border-radius: 4px; margin-bottom: 30px; border: 1px solid #d4a017;">
-            <h3 style="margin-top: 0; text-align: center; text-transform: uppercase;">Announcement</h3>
-            <p style="font-size: 14px;">Welcome to the <strong>School Fee System</strong>. Please ensure all payment records are double-checked before exporting reports.</p>
-        </div>
+    
 
         @yield('content')
     </div>
