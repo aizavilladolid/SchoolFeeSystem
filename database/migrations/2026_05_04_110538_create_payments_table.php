@@ -13,7 +13,7 @@ return new class extends Migration {
             // Link to student record
             $table->unsignedBigInteger('student_id');
 
-            // Link to fee record
+            // Link to fee record   
             $table->unsignedBigInteger('fee_id');
 
             // Payment details
